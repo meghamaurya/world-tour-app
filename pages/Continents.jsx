@@ -21,9 +21,10 @@ const Continents = ({ data }) => {
   return (
     <>
       <div>continents</div>
-      {continents.map((items) => {
+      {continents.map((items, i) => {
+        i++;
         return (
-          <Link href={`/Continents/${items.region}`}>
+          <Link href={`/Continents/${items.region}`} key={i}>
             <h3>{items}</h3>
           </Link>
         );
