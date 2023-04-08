@@ -61,12 +61,12 @@ const contries = ({ country }) => {
                             <div key={j} className=" bg-contain bg-center bg-no-repeat bg-blend-lighten" style={{ backgroundImage: `url(${items.coatOfArms.svg})` }}>
                                 <h3 className=""><span>Country:</span>{items.name.common}</h3>
                                 <h4><span>Official Name:</span>{items.name.official}</h4>
-                                <h4><span>Capital:</span>
+                                {items.capital && <h4><span>Capital:</span>
                                     {items.capital.map((capi) => {
                                         return (
                                             <p>{capi}</p>
                                         )
-                                    })}</h4>
+                                    })}</h4>}
                                 <h4><span>Continent:</span>{items.region}</h4>
                                 <p><span>Currencies:</span>{Object.keys(items.currencies)}</p>
                                 <p><span>Languages:</span>{Object.values(items.languages)}</p>
