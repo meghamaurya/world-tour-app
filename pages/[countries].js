@@ -23,7 +23,6 @@ export async function getStaticProps(context) {
     const current = context.params.countries;
     const res = await fetch(`https://restcountries.com/v3.1/name/${current}`);
     const countryName = await res.json();
-    console.log(countryName, "length")
     return {
         props: { country: countryName },
     };
@@ -33,10 +32,10 @@ const contries = ({ country }) => {
     const router = useRouter();
 
     const handleClick = (officialName) => {
-        console.log(officialName, 'hello')
-        officialArray = [officialName];
+        officialArray = [...officialArray, officialName];
         router.push('/official');
     }
+    officialArray = [];
 
     return (
         <div>
@@ -45,7 +44,9 @@ const contries = ({ country }) => {
                     {country.map((items, i) => {
                         return (
                             <div key={i} className="flex gap-4">
-                                <Image src={`${items.coatOfArms.svg}`} width={50} height={50} />
+                                {console.log(items.coatOfArms.png, 'svg')}
+                                <img src={`${items.coatOfArms.svg}`} width={50} />
+                                {/* <Image src={`${items.coatOfArms.svg}`} width={50} height={50} /> */}
                                 <h3>{items.name.common}</h3>
                                 <h4>{items.capital}</h4>
                                 <span onClick={() => handleClick(items.name.official)}>know more</span>
@@ -89,4 +90,4 @@ const contries = ({ country }) => {
     )
 }
 
-export default contries
+export default contries;
