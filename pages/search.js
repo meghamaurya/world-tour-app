@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react"
 
@@ -6,9 +7,10 @@ const Search = () => {
     const [search, setSearch] = useState('');
     const [searchData, setSearchData] = useState([]);
     const [result, setResult] = useState([]);
-
+    var i;
     useEffect(() => {
         const getData = async () => {
+            setSearch("");
             const response = await fetch('https://restcountries.com/v3.1/all');
             const data = await response.json();
             setSearchData(data);
@@ -17,7 +19,6 @@ const Search = () => {
     }, []);
 
     const handleChange = (e) => {
-        console.log(e.target.value, "search")
         setSearch(e.target.value);
         let countryName = searchData.filter((item) => {
             return item.name.common
@@ -40,13 +41,17 @@ const Search = () => {
                 onClick={handleClick}
             >search</button>
             {search && (
-                <div>{result.map((items) => {
+                <div className="flex flex-col gap-1 h-1/2 absolute top-14 z-10 font-semibold overflow-scroll">{result.map((items) => {
                     return (
                         <>
-                            <a
+                            <Link
+                                key={i++}
                                 href={`/${items.name.common}`}
-                                onClick={() => handleClick(items.name.common)}
-                            >{items.name.common}</a>
+                                onClick={() => (
+                                    setSearch(""),
+                                    setResult("")
+                                )}
+                            >{items.name.common}</Link>
                             <hr />
                         </>
                     )
