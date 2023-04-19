@@ -1,93 +1,109 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-
-export let officialArray = [];
+export let officialName = [];
 
 export async function getStaticPaths() {
-    const response = await fetch(`https://restcountries.com/v3.1/all`);
-    const data = await response.json();
-
-    let value = data.map((conti) => {
+    const jsondata = await fetch("https://restcountries.com/v3.1/all");
+    const data = await jsondata.json();
+    var values = data.map((item) => {
         return {
-            params: { countries: conti.name.common }
-        }
-    })
+            params: { country: item.name.common },
+        };
+    });
 
     return {
-        paths: value,
-        fallback: false
-    }
-}
-
-export async function getStaticProps(context) {
-    const current = context.params.countries;
-    const res = await fetch(`https://restcountries.com/v3.1/name/${current}`);
-    const countryName = await res.json();
-    return {
-        props: { country: countryName },
+        paths: values,
+        fallback: false,
     };
 }
 
-const contries = ({ country }) => {
-    const router = useRouter();
-
-    const handleClick = (officialName) => {
-        officialArray = [...officialArray, officialName];
-        router.push('/official');
-    }
-    officialArray = [];
-
-    return (
-        <div>
-            {country.length > 1 ?
-                <>
-                    {country.map((items, i) => {
-                        return (
-                            <div key={i} className="flex gap-4">
-                                {console.log(items.coatOfArms.png, 'svg')}
-                                <img src={`${items.coatOfArms.svg}`} width={50} />
-                                {/* <Image src={`${items.coatOfArms.svg}`} width={50} height={50} /> */}
-                                <h3>{items.name.common}</h3>
-                                <h4>{items.capital}</h4>
-                                <span onClick={() => handleClick(items.name.official)}>know more</span>
-                            </div>
-                        )
-                    })}
-                </>
-                :
-                <>
-                    {country.map((items, j) => {
-                        return (
-                            // <div key={j} style={{ backgroundImage: `url(${items.coatOfArms.svg.toString()})` }}>
-                            <div key={j} className=" bg-contain bg-center bg-no-repeat bg-blend-lighten" style={{ backgroundImage: `url(${items.coatOfArms.svg})` }}>
-                                <h3 className=""><span>Country:</span>{items.name.common}</h3>
-                                <h4><span>Official Name:</span>{items.name.official}</h4>
-                                {items.capital && <h4><span>Capital:</span>
-                                    {items.capital.map((capi) => {
-                                        return (
-                                            <p>{capi}</p>
-                                        )
-                                    })}</h4>}
-                                <h4><span>Continent:</span>{items.region}</h4>
-                                <p><span>Currencies:</span>{Object.keys(items.currencies)}</p>
-                                <p><span>Languages:</span>{Object.values(items.languages)}</p>
-                                <h4><span>Area:</span>{items.area}</h4>
-                                {items.borders && <h4><span>Borders:</span>
-                                    {items.borders.map((border) => {
-                                        return (
-                                            <p>{border}</p>
-                                        )
-                                    })}</h4>}
-                                <p><span>Population:</span>{items.population}</p>
-                                <p><span>Time Zones</span>{items.timezones}</p>
-                                <Image src={`${items.flags.svg}`} width={300} height={150} />
-                            </div>
-                        )
-                    })}
-                </>
-            }
-        </div>
-    )
+export async function getStaticProps(context) {
+    var current = context.params.country;
+    const jsondata = await fetch(`https://restcountries.com/v3.1/name/${current}`);
+    const data = await jsondata.json();
+    return {
+        props: {
+            countries: data,
+        },
+    };
 }
 
-export default contries;
+function Country({ countries }) {
+    console.log(countries, "contry");
+    const router = useRouter();
+    const countryName = router.query.country;
+    console.log(countryName, "countryName");
+
+    const handleClick = (countryName) => {
+        officialName = [...officialName, countryName];
+        router.push(
+            {
+                pathname: `/official`,
+                query: { offlicialName: countryName },
+            });
+    };
+    return (
+        <div>
+            {console.log(countries.length, "length")}
+            {countries.length > 1 ? (
+                <>
+                    {countries.map((items, i) => {
+                        return (
+                            <div key={i}
+                                className="flex gap-5 justify-around">
+                                <Image src={`${items.flags.svg}`}
+                                    width={50}
+                                    height={5} />
+                                <div>{items.name.common}</div>
+                                <button onClick={() => handleClick(items.name.official)}>
+                                    get details
+                                </button>
+                            </div>
+                        );
+                    })}
+                </>
+            ) : (
+                <>
+                    {countries.map((list, i) => {
+                        return (
+                            <div key={i} className="bg-slate-400">
+                                <Image src={`${list.flags.svg}`}
+                                    width={500}
+                                    height={5}
+                                    className="mix-blend-screen w-full" />
+
+                                <div className="absolute text-black top-1/4 mx-3">
+                                    <h2>Country name: {list.name.common}</h2>
+                                    <h3>Official name: {list.name.official}</h3>
+                                    <h3 className="flex gap-2">
+                                        Capital:
+                                        {list.capital.map((item) => { return <p>{item}</p>; })}
+                                    </h3>
+                                    <p>Continent: {list.region}</p>
+                                    <h3 className="flex gap-2">
+                                        languages: {Object.values(list.languages)}
+                                    </h3>
+                                    <h3>Currencies: {Object.keys(list.currencies)}</h3>
+                                    <h4 className="flex gap-3">
+                                        Borders:
+                                        {list.borders && list.borders.map((item) => { return <p>{item},</p>; })}
+                                    </h4>
+                                    <p>Area: {list.area}</p>
+                                    <p>
+                                        Time zones:{" "}
+                                        <span className="flex flex-col">{list.timezones}</span>
+                                    </p>
+                                    <p>population: {list.population}</p>
+                                </div>
+                                {/* <Image src={`${list.coatOfArms.svg}`} width={50} height={20} /> */}
+                                {/* <img src={`${list.maps.googleMaps}`} width="100" height="50" /> */}
+                            </div>
+                        );
+                    })
+                    }
+                </>
+            )}
+        </div>
+    );
+}
+export default Country;
