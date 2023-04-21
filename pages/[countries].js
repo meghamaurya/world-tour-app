@@ -7,7 +7,7 @@ export async function getStaticPaths() {
     const data = await jsondata.json();
     var values = data.map((item) => {
         return {
-            params: { country: item.name.common },
+            params: { countries: item.name.common },
         };
     });
 
@@ -18,21 +18,19 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-    var current = context.params.country;
+    var current = context.params.countries;
     const jsondata = await fetch(`https://restcountries.com/v3.1/name/${current}`);
     const data = await jsondata.json();
     return {
         props: {
-            countries: data,
+            country: data,
         },
     };
 }
 
-function Country({ countries }) {
-    console.log(countries, "contry");
+function Country({ country }) {
     const router = useRouter();
     const countryName = router.query.country;
-    console.log(countryName, "countryName");
 
     const handleClick = (countryName) => {
         officialName = [...officialName, countryName];
@@ -44,10 +42,10 @@ function Country({ countries }) {
     };
     return (
         <div>
-            {console.log(countries.length, "length")}
-            {countries.length > 1 ? (
+            {console.log(country.length, "length")}
+            {country.length > 1 ? (
                 <>
-                    {countries.map((items, i) => {
+                    {country.map((items, i) => {
                         return (
                             <div key={i}
                                 className="flex gap-5 justify-around">
@@ -64,13 +62,13 @@ function Country({ countries }) {
                 </>
             ) : (
                 <>
-                    {countries.map((list, i) => {
+                    {country.map((list, i) => {
                         return (
-                            <div key={i} className="bg-slate-400">
+                            <div key={i} className="bg-gray-400">
                                 <Image src={`${list.flags.svg}`}
-                                    width={500}
+                                    width={400}
                                     height={5}
-                                    className="mix-blend-screen w-full" />
+                                    className="mix-blend-screen w-full h-[90vh]" />
 
                                 <div className="absolute text-black top-1/4 mx-3">
                                     <h2>Country name: {list.name.common}</h2>
